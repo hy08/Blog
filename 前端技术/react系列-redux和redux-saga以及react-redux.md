@@ -181,8 +181,8 @@ redux的中间件，由于redux对于处理异步请求很麻烦，因此出现�
 
 |基本成员  |作用  |
 |---------|---------|
-|call和put     |   call(阻塞调用): 创建一个 Effect 描述信息，用来命令 middleware 以参数 args 调用函数 fn(通常可用于执行xhr请求) 。  <br />put: 创建一个 Effect 描述信息，用来命令 middleware 向 Store 发起一个 action。 这个 effect 是非阻塞型的，并且所有向下游抛出的错误（例如在 reducer 中），都不会冒泡回到 saga 当中   |
-|take和takeEvery     |     take: 创建一个 Effect 描述信息，用来命令 middleware 在 Store 上等待指定的 action。 在发起与 pattern 匹配的 action 之前，Generator 将暂停。如果以空参数或 '*' 调用 take，那么将匹配所有发起的 action。（例如，take() 将匹配所有 action）<br />  takeEvery(pattern, saga, ...args):在发起（dispatch）到 Store 并且匹配 pattern 的每一个 action 上派生一个 saga。 **和take函数不同之处在于可以针对action指定一个saga**  |
+|call和put     |   call(阻塞调用): 创建一个 Effect 描述信息，用来命令 middleware 以参数 args 调用函数 fn(通常可用于执行xhr请求) 。  <br /><br />put: 创建一个 Effect 描述信息，用来命令 middleware 向 Store 发起一个 action。 这个 effect 是非阻塞型的，并且所有向下游抛出的错误（例如在 reducer 中），都不会冒泡回到 saga 当中   |
+|take和takeEvery     |     take: 创建一个 Effect 描述信息，用来命令 middleware 在 Store 上等待指定的 action。 在发起与 pattern 匹配的 action 之前，Generator 将暂停。如果以空参数或 '*' 调用 take，那么将匹配所有发起的 action。（例如，take() 将匹配所有 action）<br /><br />  takeEvery(pattern, saga, ...args):在发起（dispatch）到 Store 并且匹配 pattern 的每一个 action 上派生一个 saga。 **和take函数不同之处在于可以针对action指定一个saga**  |
 |takeLatest     |   在发起到 Store 并且匹配 pattern 的每一个 action 上派生一个 saga。并自动取消之前所有已经启动但仍在执行中的 saga 任务。  **即执行最新的action**    |
 |fork     |  fork(fn, ...args) 创建一个 Effect 描述信息，用来命令 middleware 以 非阻塞调用 的形式执行 fn 。**返回一个Task对象**      |
 |cancle     |     cancel(task)  创建一个 Effect 描述信息，用来命令 middleware 取消之前的一个分叉任务。 task: Task - 由之前 fork 指令返回的 Task 对象   。**即取消任务** |
@@ -222,8 +222,6 @@ mapDispatchToProps。
 
 1. mapStateToProps:  函数，可以将redux中的state和组件的props建立映射关系
 2. mapDispatchToProps：函数or对象，用来建立 UI 组件的参数到store.dispatch方法的映射。也就是说，它定义了哪些用户的操作应该当作 Action，传给 Store(来源阮大)
-
-
 
 ### 容器组件和UI组件
 容器组件
