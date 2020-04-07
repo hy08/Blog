@@ -8,7 +8,9 @@
 
 这说明，transform 属性只是对给定元素做视觉上的静态变化，并没有动画的特性。但是在我们使用动画的时候，结合 transform 的属性可以做出很多效果，可以说该属性是组成动画的必不可少的成分。
 
-## translate
+transform需要搭配transition过渡效果，否则容易显得生硬。
+
+### translate
 
 > translate 其实是属性值，隶属于 transform 属性。通过 translate(x,y) 方法，元素从其当前位置移动，根据给定的 left（x 坐标） 和 top（y 坐标） 位置参数。通过 translate3d(x,y,z),实现 3d 移动
 
