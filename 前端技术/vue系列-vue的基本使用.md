@@ -19,9 +19,9 @@ new Vue({
 vue实例向外暴露了一系列的[属性](https://cn.vuejs.org/v2/api/#%E5%AE%9E%E4%BE%8B%E5%B1%9E%E6%80%A7)、[方法](https://cn.vuejs.org/v2/api/#%E5%AE%9E%E4%BE%8B%E6%96%B9%E6%B3%95-%E6%95%B0%E6%8D%AE)、[事件](https://cn.vuejs.org/v2/api/#%E5%AE%9E%E4%BE%8B%E6%96%B9%E6%B3%95-%E4%BA%8B%E4%BB%B6)、[生命周期](https://cn.vuejs.org/v2/api/#%E5%AE%9E%E4%BE%8B%E6%96%B9%E6%B3%95-%E7%94%9F%E5%91%BD%E5%91%A8%E6%9C%9F)
 
 ## vue组件
-
+假装有内容...
 ### 渲染
-
+假装有内容...
 #### template
 1. vue的模板语法
 2. 基于html
@@ -47,7 +47,7 @@ vue实例向外暴露了一系列的[属性](https://cn.vuejs.org/v2/api/#%E5%AE
 但是，从团队角度看，当然是少数服从多数啦🙈🙉🙊...
 
 ### 样式
-
+假装有内容...
 #### class类名
 `:class="classObject"`，类似于react中的classnames组件使用。
 
@@ -61,7 +61,7 @@ vue实例向外暴露了一系列的[属性](https://cn.vuejs.org/v2/api/#%E5%AE
 [Vue: scoped 样式与 CSS Module 对比](https://juejin.im/post/5b9556446fb9a05d1b2e3613)
 
 ### 脚本
-
+假装有内容...
 #### data(基础数据)
 vue实例的data必须是纯粹的对象 (含有零个或多个的 key/value 对)。
 vue组件的data必须声明为返回一个初始数据对象的函数。因为组件可能被用来创建多个实例。
@@ -100,7 +100,57 @@ methods: {
 1. $event：获取event事件对象
 2. @eventName.修饰符
 
-## 组件通信
+## 组件
+假装有内容...
+### 组件声明和注册
+组件声明简单理解就是创建一个vue文件(template、css、js)。
+在其他组件中想要使用自定义组件，需要在components对象中注册组件
+```dotnetcli
+import ComponentA from './ComponentA.vue'
+
+export default {
+  components: {
+    ComponentA
+  },
+  // ...
+}
+```
+### props
+1. props需要先进行声明，之后再使用
+2. [有类似react propType校验](https://cn.vuejs.org/v2/guide/components-props.html#Prop-%E9%AA%8C%E8%AF%81)
+3. prop属性在template中需要用kebab-case (短横线分隔命名)
+4. 使用的时候，使用`v-bind:prop='value' | :prop='value'`进行赋值
+5. 和react类似，遵从单项数据流原则
+6. 开发模式，我觉得react的最佳实践很好
+
+```dotnetcli
+Vue.component('blog-post', {
+  // 在 JavaScript 中是 camelCase 的
+  props: ['postTitle'],
+  template: '<h3>{{ postTitle }}</h3>'
+})
+
+<!-- 在 HTML 中是 kebab-case 的 -->
+<blog-post post-title="hello!"></blog-post>
+```
+### 插槽(slot)
+1. 类似与react中的children，使用和children一样，在定义的地方改为`<slot></slot>`
+2. 注意作用域问题，slot的作用域是定义的组件实例，怎么传参看文档.
+
+
+### 组件通信
+假装有内容...
+#### 事件通知模式（父子）
+1. 始终使用 kebab-case 的事件名
+2. $emit(eventName,[eventPrama1,eventPrama2,...])触发事件
+3. 注意表单组件(v-model)比较特殊
+4. 绑定原生事件不奏效的时候看文档：[将原生事件绑定到组件](https://cn.vuejs.org/v2/guide/components-custom-events.html#%E5%B0%86%E5%8E%9F%E7%94%9F%E4%BA%8B%E4%BB%B6%E7%BB%91%E5%AE%9A%E5%88%B0%E7%BB%84%E4%BB%B6)
+5. `update:myPropName | .sync`,修改某些简单的属性
+
+
+#### vue Bus模式（父子+兄弟）
+
+#### vuex（父子+兄弟）
 
 ## 扩展
 
