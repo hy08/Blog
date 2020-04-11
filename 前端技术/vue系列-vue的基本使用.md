@@ -137,20 +137,33 @@ Vue.component('blog-post', {
 1. 类似与react中的children，使用和children一样，在定义的地方改为`<slot></slot>`
 2. 注意作用域问题，slot的作用域是定义的组件实例，怎么传参看文档.
 
+### 动态组件和异步组件
+1. 动态组件:`v-bind:is='组件对象或者组件名'`,keep-alive保持状态
+2. 异步组件，需要配合vue-router和webpack
 
 ### 组件通信
 假装有内容...
 #### 事件通知模式（父子）
 1. 始终使用 kebab-case 的事件名
-2. $emit(eventName,[eventPrama1,eventPrama2,...])触发事件
+2. $emit(eventName,[eventPrama1,eventPrama2,...])触发事件,v-on监听事件
 3. 注意表单组件(v-model)比较特殊
 4. 绑定原生事件不奏效的时候看文档：[将原生事件绑定到组件](https://cn.vuejs.org/v2/guide/components-custom-events.html#%E5%B0%86%E5%8E%9F%E7%94%9F%E4%BA%8B%E4%BB%B6%E7%BB%91%E5%AE%9A%E5%88%B0%E7%BB%84%E4%BB%B6)
 5. `update:myPropName | .sync`,修改某些简单的属性
 
 
-#### vue Bus模式（父子+兄弟）
+#### [vue Bus模式（父子+兄弟）](https://juejin.im/post/5a4353766fb9a044fb080927)
+
+不推荐，建议直接上vuex
 
 #### vuex（父子+兄弟）
+见扩展4
+
+### ref和依赖注入
+1. 直接就是定义字符串，具体实现看[文档](https://cn.vuejs.org/v2/guide/components-edge-cases.html#%E8%AE%BF%E9%97%AE%E5%AD%90%E7%BB%84%E4%BB%B6%E5%AE%9E%E4%BE%8B%E6%88%96%E5%AD%90%E5%85%83%E7%B4%A0)
+2. [依赖注入有点意思](https://cn.vuejs.org/v2/guide/components-edge-cases.html#%E4%BE%9D%E8%B5%96%E6%B3%A8%E5%85%A5),类似于react中的Context
+
+### 常用的特殊Api
+1.nextTick，由于修改dom之后不能立刻获取更新后的dom实例，调用nextTick可以解决这个问题
 
 ## 扩展
 
