@@ -60,6 +60,9 @@ vue实例向外暴露了一系列的[属性](https://cn.vuejs.org/v2/api/#%E5%AE
 #### scoped样式和css Module
 [Vue: scoped 样式与 CSS Module 对比](https://juejin.im/post/5b9556446fb9a05d1b2e3613)
 
+#### 使用全局样式
+[使用全局样式](https://juejin.im/entry/5aa4bc316fb9a028d7003a64)
+
 ### 脚本
 假装有内容...
 #### data(基础数据)
