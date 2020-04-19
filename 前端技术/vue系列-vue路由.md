@@ -63,7 +63,7 @@ const User = {
 结合二者可以做权限校验
 
 ## 路由加载中状态/路由过渡
-1. [加载中](https://segmentfault.com/a/1190000017014756)
+1. [加载中](https://www.jianshu.com/p/6631752c5d7a)
 2. 过渡 `<router-view> 是基本的动态组件，所以我们可以用 <transition> 组件给它添加一些过渡效果`
 
 
