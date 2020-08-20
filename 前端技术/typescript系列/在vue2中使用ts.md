@@ -10,6 +10,8 @@
 4. vuex 的 ts 方案
 5. api 类型定义的建议
 
+忍不住吐个槽，在 vue 中使用 ts 好难受啊，总想着放弃。。。
+
 ## vue-property-decorator
 
 ## vuex-module-decorators
