@@ -2,7 +2,7 @@
 
 文本所介绍的内容是使用 TypeScript 编写 Vue2.6.11 前端应用，具体 demo 地址可访问: [vue-ts-demo](https://github.com/hy08/all-demo/tree/master/vue-demo)。
 
-本文总结几个月来在 vue 中使用 ts 的经验，提炼一个最小可运行案例，该案例将包括：
+本文总结几个月来在 ts 环境 中使用 vue 的经验，提炼一个最小可运行案例，该案例将包括：
 
 1. 搭建 ts 项目，配置 tsconfig.json
 2. 单文件组件(template 组件)的使用
@@ -13,7 +13,7 @@
 
 ## 项目搭建与配置
 
-vue2 版本的 ts 项目直接使用官方的脚手架 vue-cli 即可，根据项目组情况判断是否需要使用 tsx、css 预处理+css module、单元测试。
+ts 环境下 vue2 版本的项目直接使用官方的脚手架 vue-cli 即可，根据项目组情况判断是否需要使用 tsx、css 预处理+css module、单元测试。
 
 项目创建完成，默认生成一份`tsconfig.json`文件。ts 配置项解释可以参考[TypeScript 官方教程](https://www.tslang.cn/docs/handbook/tsconfig-json.html)。
 
@@ -31,45 +31,81 @@ vue-class-component 允许我们通过使用类语法声明 vue 组件，需要�
 
 ```
   import { Vue, Component } from 'vue-property-decorator';
-  //引入组件
+
   @Component
   export default class Index extends Vue {
 
   }
+
+  //相当于
+  <script>
+    module.export = {
+
+    }
+  </script>
 ```
 
 ### 生命周期
 
-生命周期钩子的使用和原先使用的区别：在类语法中直接将生命周期生命为方法。
+生命周期钩子的使用和原先使用的区别：在类语法中直接将生命周期生命为方法(方法名称和生命周期名称一致)。
 
 ```
-  created() {
-    console.log('created');
+  import { Vue, Component } from 'vue-property-decorator';
+
+  @Component
+  export default class Index extends Vue {
+    created() {
+      console.log('created');
+    }
+    mounted() {
+      console.log('mounted');
+    }
   }
-  mounted() {
-    console.log('mounted');
-  }
+
+  //相当于
+  <script>
+    module.export = {
+      created() {
+        console.log('created');
+      }
+      mounted() {
+        console.log('mounted');
+      }
+    }
+  </script>
 ```
 
 ### 响应式数据 data
 
-类语法中定义响应式数据可以直接定义为类的实例属性。原始类型的数据不需要定义类型，ts 可以实现类型推断，但是复杂的类型需要定义。  
+类语法中可以直接定义为类的实例属性作为组件的响应式数据。原始类型的数据不需要定义类型，ts 可以实现类型推断，但是复杂的类型需要定义。  
 其中值得注意的一点是：当数据的值是 undefined 或者只定义未赋初值，`vue-class-component`不会将该属性修饰为响应式数据！这会导致异常。推荐方案是进行赋初值，或者扩展一个 null 类型再赋值未 null。
 
 ```
-import { Vue, Component } from 'vue-property-decorator';
-type User = {
-  name: string;
-  age: number;
-};
-//引入组件
-@Component
-export default class Index extends Vue {
-  message = 'hello world';
-  info: User = { name: 'hy', age: 25 };
-  //如果数据的值是undefined或者未赋初值,则不会成为响应式数据。解决方案：追加类型定义null
-  count: number;
-}
+  import { Vue, Component } from 'vue-property-decorator';
+
+  type User = {
+    name: string;
+    age: number;
+  };
+  @Component
+  export default class Index extends Vue {
+    message = 'hello world';
+    info: User = { name: 'test', age: 25 };
+    //如果数据的值是undefined或者未赋初值,则不会成为响应式数据。解决方案：追加类型定义null
+    count: number;
+  }
+
+  //相当于
+  <script>
+    module.export = {
+      data:function(){
+        return {
+          message: 'hello world',
+          info: { name: 'test', age: 25 };
+        }
+      }
+    }
+  </script>
 ```
 
 ### 计算属性 computed
@@ -77,31 +113,147 @@ export default class Index extends Vue {
 类语法中的计算属性的实现，是通过 get 取值函数。
 
 ```
-//computed定义
-get introduction() {
-  return `姓名：${this.info.name}, 年龄：${this.info.age}`;
-}
+  import { Vue, Component } from 'vue-property-decorator';
+
+  @Component
+  export default class Index extends Vue {
+    //computed定义
+    get introduction() {
+      return `姓名：${this.info.name}, 年龄：${this.info.age}`;
+    }
+  }
+
+  //相当于
+  <script>
+    module.export = {
+      computed:{
+        introduction() {
+          return `姓名：${this.info.name}, 年龄：${this.info.age}`;
+        }
+      }
+    }
+  </script>
 ```
 
 ### 数据监听 watch
 
-使用 ts 的 vue 框架实现响应式的数据监听，是由`vue-property-decorator`依赖提供 Watch 装饰器来完成
+类语法实现响应式的数据监听，是由`vue-property-decorator`依赖提供 Watch 装饰器来完成
 
 ```
-//watch定义，其中Wacth装饰器第一个参数：响应式数据字符串(也可以定义为'a.b');第二个参数options成员[immediate,deep]分别对应的是原生的用法
-@Watch('$route', { immediate: true })
-private changeRouter(val: Route, oldVal: Route) {
-  console.log('$route watcher: ', val, oldVal);
-}
+  import { Vue, Component } from 'vue-property-decorator';
+
+  @Component
+  export default class Index extends Vue {
+    //watch定义，其中Wacth装饰器第一个参数：响应式数据字符串(也可以定义为'a.b');
+    //第二个参数options成员[immediate,deep]分别对应的是原生的用法
+    @Watch('$route', { immediate: true })
+    changeRouter(val: Route, oldVal: Route) {
+      console.log('$route watcher: ', val, oldVal);
+    }
+  }
+
+  //相当于
+  <script>
+    module.export = {
+      watch:{
+        '$route':function(val,oldVal) {
+          console.log('$route watcher: ', val, oldVal);
+        }
+      }
+    }
+  </script>
+```
+
+### 方法 methods
+
+在类语法实现原生 vue 的方法的方式，即通过直接定义类方法成员。
+
+```
+  import { Vue, Component } from 'vue-property-decorator';
+
+  @Component
+  export default class Index extends Vue {
+    hello(){
+      console.log('hello world');
+    }
+  }
+
+  //相当于
+  <script>
+    module.export = {
+      methods:{
+        hello(){
+          console.log('hello world');
+        }
+      }
+    }
+  </script>
+```
+
+### 引入组件
+
+和原生写法一致，都需要先引入在注册，区别在于类语法注册在修饰器中。组件使用方式和 vue 原生一致。
+
+```
+  import { Vue, Component } from 'vue-property-decorator';
+  import Header from '../component/header/index.vue';
+
+  @Component({
+    components: {
+      Header,
+    },
+  })
+  export default class Index extends Vue {
+  }
+
+  //相当于
+  <script>
+    module.export = {
+      components: {
+        Header,
+      }
+    }
+  </script>
 ```
 
 ### 组件属性 props
 
-### 方法 methods
+类语法实现组件 props 定义是通过装饰器`@Prop`实现
+
+```
+  import { Vue, Component, Prop } from 'vue-property-decorator';
+  import { User } from '@/types/one';
+
+  @Component
+  export default class Header extends Vue {
+    @Prop({ type: String, default: '标题' }) readonly title?: string;
+    //复杂类型type参数的值为Object，默认值需要以函数形式返回
+    @Prop({ type: Object, default: () => ({ name: '-', age: '-' }) }) readonly author!: User;
+  }
+
+
+  //相当于
+  <script>
+    module.export = {
+      props:{
+        title:{
+          type: String,
+          required: false,
+          default: '标题'
+        },
+        author:{
+          type: Object,
+          required: true,
+          default: { name: '-', age: '-' }
+        }
+      }
+    }
+  </script>
+```
 
 ### 事件触发
 
-### 引入组件
+ts 环境下 vue 的事件触发方式和 js 环境下是一致的，区别只是事件回调定义的地方不同（ts 定义为类的实例方法，js 定义在 methods 属性中）。
 
 ### ref 使用
 
