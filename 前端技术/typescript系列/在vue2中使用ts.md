@@ -193,6 +193,7 @@ vue-class-component 允许我们通过使用类语法声明 vue 组件，需要�
 ### 引入组件
 
 和原生写法一致，都需要先引入在注册，区别在于类语法注册在修饰器中。组件使用方式和 vue 原生一致。
+顺便说一点，如果需要在`.vue`文件中
 
 ```
   import { Vue, Component } from 'vue-property-decorator';
@@ -262,6 +263,11 @@ ts 环境下 vue 的事件触发方式和 js 环境下是一致的，区别只�
 ### slots 和 scopedSlots
 
 ## tsx 组件的使用
+
+## tsx 组件和 vue 组件
+
+在`.vue`文件中以`<script></script>`方式定义组件，文件跳转正常，但是暂未实现路径的智能提示。
+在`.tsx | .ts`文件引入`.vue`,路径智能提示正常，但是会发生无法跳转到 vue 文件的情况。
 
 ## vue-router 的 ts 方案
 
