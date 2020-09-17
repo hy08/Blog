@@ -258,7 +258,96 @@ ts 环境下 vue 的事件触发方式和 js 环境下是一致的，区别只�
 
 ### ref 使用
 
+在类语法中使用 ref 需要借助`vue-property-decorator`提供的 Ref 装饰器,使用方法如下：
+
+```
+//模板和原生vue保持一致
+<template>
+  <div class="container">
+    <Header ref="header" title="首页" :author="info" />
+  </div>
+</template>
+
+<script lang="ts">
+  import { Vue, Component, Watch, Ref } from 'vue-property-decorator';
+  import { Route, NavigationGuardNext } from 'vue-router';
+  import Header from '../component/header/index.vue';
+
+  @Component({
+    components: {
+      Header,
+    },
+  })
+  export default class Index extends Vue {
+    @Ref('header') readonly headerRef!: Header;
+  }
+</script>
+
+//相当于
+<script>
+  export default  {
+    computed():{
+      headerRef:{
+        cache:false,
+        get(){
+          return this.$refs.header as Header
+        }
+      }
+    }
+  }
+</script>
+```
+
 ### mixins 使用
+
+类语法使用 mixins 需要继承`vue-property-decorator`提供的 Mixins 函数所生成的类。
+Mixins 函数的参数是 Vue 实例类，正确使用会用 mixin 成员的的智能提示，使用方式如下：
+
+```
+// mixins.js
+  import Vue from 'vue';
+  import Component from 'vue-class-component';
+
+  // You can declare mixins as the same style as components.
+  @Component
+  export class Hello extends Vue {
+    /**
+    *  mixin中的响应式数据
+    */
+    mixinText = 'Hello mixins';
+
+    obj: { name: string } = { name: 'han' };
+  }
+
+//index.vue
+<script lang="ts">
+  import {  Component, Mixins, Watch, Ref } from 'vue-property-decorator';
+  @Component
+  export default class Index extends Mixins(Hello) {
+
+    created(){
+      console.log(this.mixinText,this.obj.name);
+    }
+  }
+</script>
+
+//相当于
+<script>
+  export default{
+    mixins:{
+      data(){
+        return {
+          mixinText:'Hello mixins',
+          obj: { name: 'han' }
+        }
+      }
+    },
+    created(){
+      console.log(this.mixinText,this.obj.name);
+    }
+  }
+</script>
+```
 
 ### slots 和 scopedSlots
 
