@@ -351,14 +351,32 @@ Mixins 函数的参数是 Vue 实例类，正确使用会用 mixin 成员的的�
 
 ### slots 和 scopedSlots
 
+slots 和 scopedSlots 的使用方式和原生 vue 保持一致。
+
 ## tsx 组件的使用
+
+如果在项目中需要使用 jsx，默认 vue-cli 创建项目会提示是否支持 jsx，但是由于 vue 对 jsx 的支持不完善，导致在使用不像 react 那样可以提示组件 props 的类型定义，所以使用上非常难受。因此引入`vue-tsx-support`解决该问题。
+
+至于 在 vue 中如何使用 jsx，推荐[在 Vue 中使用 JSX 的正确姿势](https://zhuanlan.zhihu.com/p/37920151)
+
+### 配置
+
+### dataProps 定义
+
+### eventProps 定义
+
+### scopedSlotsProps 定义
 
 ## 遗留问题
 
-在`.vue`文件中以`<script></script>`方式定义组件，文件跳转正常，但是暂未实现路径的智能提示。
+在单文件组件模式中，文件跳转正常(ctrl+鼠标点击可以跳转到定义)，但是暂未实现路径的智能提示。
 在`.tsx | .ts`文件引入`.vue`,路径智能提示正常，但是会发生无法跳转到 vue 文件的情况。
 
 ## vue-router 的 ts 方案
+
+### 路由定义和引用
+
+### 路由钩子函数定义
 
 ## vuex 的 ts 方案
 
