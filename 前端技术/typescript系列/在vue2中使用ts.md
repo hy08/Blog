@@ -356,7 +356,9 @@ slots 和 scopedSlots 的使用方式和原生 vue 保持一致。
 
 如果在项目中需要使用 jsx，默认 vue-cli 创建项目会提示是否支持 jsx，但是由于 vue 对 jsx 的支持不完善，导致在使用不像 react 那样可以提示组件 props 的类型定义，使用上非常难受。因此引入`vue-tsx-support`解决该问题。详情请见：[vue-tsx-support(github 文档)](https://github.com/wonderful-panda/vue-tsx-support)
 
-至于 在 vue 中如何使用 jsx，推荐[在 Vue 中使用 JSX 的正确姿势](https://zhuanlan.zhihu.com/p/37920151)，该文详细介绍了 vue 实现 jsx 的原理以及几种 props 的区别和使用
+至于 在 vue 中如何使用 jsx，推荐[在 Vue 中使用 JSX 的正确姿势](https://zhuanlan.zhihu.com/p/37920151)，该文详细介绍了 vue 实现 jsx 的原理以及几种 props 的区别和使用。
+
+tsx 组件的很多地方和 template 组件使用方式一致，但是 props 定义、scopedSlots 定义和使用，以及引入第三方组件之后的处理方式有差异。其他地方例如生命周期、data、computed、watch、methods、事件触发、ref 使用都是一致的。
 
 ### 配置
 
@@ -374,13 +376,215 @@ slots 和 scopedSlots 的使用方式和原生 vue 保持一致。
 
 现在 tsx 组件的 props 智能提示开始生效。
 
+### 组件定义的方式
+
+`vue-tsx-support`支持的 tsx 组件定义方式可以使用类似与原生 vue 的对象的写法，或者类语法编写。笔者更推荐使用类语法编写组件，这样和模板写法也更相近。
+
+如果喜欢接近原生 vue 的对象风格，可以参考：[官方文档](https://github.com/wonderful-panda/vue-tsx-support#writing-components-by-object-style-api-like-vueextend)。
+
+使用类语法编写组件有两种方式：
+
+1. 通过继承`vue-tsx-support`提供的 Component 类来编写
+2. 通过继承 Vue 类并且声明\_tsx 成员
+
+笔者一直在使用前者，但是最近总结经验，发现后者更好些。主要是继承 Component 之后使用 mixins 想要有智能提示的话，需要将定义挂载在 Vue 上，不够友好。因此推荐使用：**通过继承 Vue 类并且声明\_tsx 成员**，下文都是争对该方案的说明。
+
+### 组件实例
+
+声明 tsx 组件,文件后缀必须为`.tsx`，这点和 react 不同，react 在 ts 文件中也是可以使用 jsx 的，但是 vue 不可以。如果一定要在`.ts`文件中，可以使用初始定义 jsx 的方式，具体可参照[vue 官网:](https://cn.vuejs.org/v2/guide/render-function.html#%E5%AE%8C%E6%95%B4%E7%A4%BA%E4%BE%8B)。
+
+在 tsx 文件中，声明组件的方式和 template 组件是一致的。
+
+```
+import { Vue, Component, Prop } from 'vue-property-decorator';
+import * as tsx from 'vue-tsx-support';
+
+@Component
+export default class Header extends Vue {
+}
+```
+
 ### dataProps 定义
+
+首先我们需要和 template 组件一样将所有的 props 定义好。
+
+然后根据情况，如果可以将所有 data 数据、computed 方法、方法定义设置为私有，这样可以使用`vue-tsx-support`提供的`AutoProps别名`，来声明 Props。如果有成员需要设置为 public，可以使用 tsx 提供的`PickProps别名`。
+
+```
+//AutoProps
+import { Vue, Component, Prop } from 'vue-property-decorator';
+import * as tsx from 'vue-tsx-support';
+import { User } from '@/types/one';
+import styles from './index.less';
+
+@Component
+export default class Header extends Vue {
+  _tsx!: tsx.DeclareProps<tsx.AutoProps<Header>>;
+
+  @Prop({ type: String, default: '标题' }) readonly title?: string;
+  @Prop({ type: Object, default: () => ({ name: '-', age: '-' }) }) readonly author!: User;
+
+  private goAboutMe() {
+    this.$router.push('/about');
+  }
+
+  render() {
+    return (
+      <div class={styles.header}>
+        <div class={styles.title}>
+          <h1>{this.title}</h1>
+          <span onClick={this.goAboutMe}>
+            作者：
+            <span>{this.author.name}</span>
+          </span>
+        </div>
+      </div>
+    );
+  }
+}
+
+//PickProps
+import { Vue, Component, Prop } from 'vue-property-decorator';
+import * as tsx from 'vue-tsx-support';
+import { User } from '@/types/one';
+import styles from './index.less';
+
+@Component
+export default class Header extends Vue {
+  _tsx!: tsx.DeclareProps<tsx.PickProps<Header, 'title' | 'author'>>;
+
+  @Prop({ type: String, default: '标题' }) readonly title?: string;
+  @Prop({ type: Object, default: () => ({ name: '-', age: '-' }) }) readonly author!: User;
+
+   goAboutMe() {
+    this.$router.push('/about');
+  }
+
+  render() {
+    return (
+      <div class={styles.header}>
+        <div class={styles.title}>
+          <h1>{this.title}</h1>
+          <span onClick={this.goAboutMe}>
+            作者：
+            <span>{this.author.name}</span>
+          </span>
+        </div>
+      </div>
+    );
+  }
+}
+```
 
 ### eventProps 定义
 
+`_tsx`成员的类型可以定义为交叉类型，将事件类型定义混入到`_tsx`中就可以了
+
+```
+import * as tsx from 'vue-tsx-support';
+import { Vue, Component, Prop } from 'vue-property-decorator';
+export default class Header extends Vue {
+  _tsx!: tsx.DeclareProps<tsx.AutoProps<Header>> & tsx.DeclareOnEvents<{ onClick: string }>;
+  render(){
+    return <div></div>
+  }
+}
+
+```
+
 ### scopedSlotsProps 定义
 
+vue 中的 scopedSlots 相当于 react 中的 renderProp。
+
+tsx 组件中定义如下：
+
+```
+import * as tsx from 'vue-tsx-support';
+import { Vue, Component, Prop } from 'vue-property-decorator';
+export default class Header extends Vue {
+  //这样就声明了两个scopedSlot，默认的scopedSlot参数类型为空，header参数类型为string
+  $scopedSlots!: tsx.InnerScopedSlots<{ default?: void,header?:string }>;
+  render(){
+    return <div></div>
+  }
+}
+
+```
+
+### mixins 使用
+
+mixins 使用和 template 组件保持一致
+
 ### 第三方组件 props 推断
+
+由于 vue 实现的 jsx 没有参数类型提示，因此引入第三方组件也是没有 props 提示。所有我们需要使用`vue-tsx-support`来进行 jsx 支持。
+
+这里我创建一份`propsCovert.ts`文件，使用`vue-tsx-support`提供的 ofType 方法来对第三方组件的 props 进行定义推导。
+
+递归第三方组件的 dataProps，并将其类型推导出。eventProps 定义为索引类型，参数类型定义为 any。scopedSlotsProps 同样定义为索引类型，参数类型定义为 any。
+
+之后没此使用第三方组件，只要用 antdPropsConvert 方法包装下即可在使用时得到 props 的智能提示。
+
+```
+//propsConvert.ts
+
+import { ofType } from 'vue-tsx-support';
+
+type PowerPartial<T> = {
+  // 如果是 object，则递归类型
+  [U in keyof T]?: T[U] extends Function ? Function : T[U] extends object ? PowerPartial<T[U]> : T[U];
+};
+type Omit<T, K extends keyof any> = Pick<T, Exclude<keyof T, K>>;
+type OmitVue<T> = PowerPartial<Omit<T, keyof Vue>>;
+
+interface AnyEvent {
+  [key: string]: any;
+}
+interface AnyScopedSlots {
+  [key: string]: any;
+}
+
+function antdPropsConvert<T extends Vue>(componentType: new (...args: any[]) => T) {
+  return ofType<OmitVue<T>, AnyEvent, AnyScopedSlots>().convert(componentType);
+}
+export { antdPropsConvert };
+
+
+// sider.tsx
+import { Vue, Component } from 'vue-property-decorator';
+import * as tsx from 'vue-tsx-support';
+import { Button as AButton } from 'ant-design-vue';
+import styles from './index.less';
+import { antdPropsConvert } from '@/utils/propsConvert';
+
+const Button = antdPropsConvert(AButton);
+
+@Component
+export default class Sider extends Vue {
+  _tsx!: tsx.DeclareOnEvents<{ onClick: string }>;
+
+  $scopedSlots!: tsx.InnerScopedSlots<{ default?: void }>;
+
+  render() {
+    return (
+      <div class={styles.sider}>
+        {this.$scopedSlots.default && this.$scopedSlots.default()}
+        <div>
+          <Button
+            type="primary"
+            onClick={() => {
+              this.$emit('click', '事件触发参数');
+            }}
+          >
+            事件触发
+          </Button>
+        </div>
+      </div>
+    );
+  }
+}
+
+```
 
 ### 事件修饰
 
