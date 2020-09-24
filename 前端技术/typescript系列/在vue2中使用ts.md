@@ -2,7 +2,7 @@
 
 文本所介绍的内容是使用 TypeScript 编写 Vue2.6.11 前端应用，具体 demo 地址可访问: [vue-ts-demo](https://github.com/hy08/all-demo/tree/master/vue-demo)。
 
-本文总结几个月来在 ts 环境 中使用 vue 的经验，提炼一个最小可运行案例，该案例将包括：
+总结几个月来在 ts 环境 中使用 vue 的经验，提炼一个最小可运行案例，该案例将包括：
 
 1. 搭建 ts 项目，配置 tsconfig.json
 2. 单文件组件(template 组件)的使用
@@ -13,13 +13,13 @@
 
 ## 项目搭建与配置
 
-ts 环境下 vue2 版本的项目直接使用官方的脚手架 vue-cli 即可，根据项目组情况判断是否需要使用 tsx、css 预处理+css module、单元测试。
+ts 环境下 vue2 版本的项目可直接使用官方的脚手架 vue-cli 进行搭建，根据项目组情况判断是否需要使用 tsx、css 预处理+css module、单元测试。
 
 项目创建完成，默认生成一份`tsconfig.json`文件。ts 配置项解释可以参考[TypeScript 官方教程](https://www.tslang.cn/docs/handbook/tsconfig-json.html)。
 
-在`package.json`中默认安装[vue-class-component](https://github.com/vuejs/vue-class-component)包，该依赖通过装饰器模式实现了 vue 的 ts 适配，也是官方推荐的使用 ts 方式。不过笔者更建议使用[vue-property-decorator](https://github.com/kaorun343/vue-property-decorator)包，因为后者在前者基础上进行了修改与扩充。`vue-class-component`拥有的功能`vue-property-decorator`都具备，并且功能更强大，也更易于使用。
+在`package.json`中默认安装[vue-class-component](https://github.com/vuejs/vue-class-component)，该库通过装饰器模式实现了 vue 的 ts 适配，也是官方推荐的使用 ts 方式。不过更建议使用[vue-property-decorator](https://github.com/kaorun343/vue-property-decorator)包，因为后者在前者基础上进行了修改与扩充。`vue-class-component`拥有的功能`vue-property-decorator`都具备，并且功能更强大，也更易于使用。
 
-对于使用 Vuex 的项目，建议安装[vuex-module-decorators](https://github.com/championswimmer/vuex-module-decorators)包，这是在 vue 中使用 ts 的一种解决方案。
+对于使用 Vuex 的项目，建议安装[vuex-module-decorators](https://github.com/championswimmer/vuex-module-decorators)包，这是在 ts 环境下中使用 vuex 的一种解决方案。
 
 由于 vue 对 jsx 的支持问题，如果想实现如同 react 的组件 props 的智能提示，需要安装[vue-tsx-support](https://github.com/wonderful-panda/vue-tsx-support)。
 
@@ -27,7 +27,7 @@ ts 环境下 vue2 版本的项目直接使用官方的脚手架 vue-cli 即可�
 
 ### 组件实例
 
-vue-class-component 允许我们通过使用类语法声明 vue 组件，需要使用@Component 修饰。
+vue-class-component 允许我们通过使用类语法声明 vue 组件，需要使用`@Component`装饰器。
 
 ```
   import { Vue, Component } from 'vue-property-decorator';
@@ -137,7 +137,7 @@ vue-class-component 允许我们通过使用类语法声明 vue 组件，需要�
 
 ### 数据监听 watch
 
-类语法实现响应式的数据监听，是由`vue-property-decorator`依赖提供 Watch 装饰器来完成
+类语法实现响应式的数据监听，是由`vue-property-decorator`依赖提供`@Watch`装饰器来完成
 
 ```
   import { Vue, Component } from 'vue-property-decorator';
@@ -257,7 +257,7 @@ ts 环境下 vue 的事件触发方式和 js 环境下是一致的，区别只�
 
 ### ref 使用
 
-在类语法中使用 ref 需要借助`vue-property-decorator`提供的 Ref 装饰器,使用方法如下：
+在类语法中使用 ref 需要借助`vue-property-decorator`提供的`@Ref`装饰器,使用方法如下：
 
 ```
 //模板和原生vue保持一致
@@ -378,20 +378,20 @@ tsx 组件的很多地方和 template 组件使用方式一致，但是 props �
 
 ### 组件定义的方式
 
-`vue-tsx-support`支持的 tsx 组件定义方式可以使用类似与原生 vue 的对象的写法，或者类语法编写。笔者更推荐使用类语法编写组件，这样和模板写法也更相近。
+`vue-tsx-support`支持的 tsx 组件定义方式可以使用类似与原生 vue 的对象的写法，或者类语法编写。更推荐使用类语法编写组件，这样和模板写法也更相近。
 
 如果喜欢接近原生 vue 的对象风格，可以参考：[官方文档](https://github.com/wonderful-panda/vue-tsx-support#writing-components-by-object-style-api-like-vueextend)。
 
 使用类语法编写组件有两种方式：
 
 1. 通过继承`vue-tsx-support`提供的 Component 类来编写
-2. 通过继承 Vue 类并且声明\_tsx 成员
+2. 通过继承 Vue 类并且声明`_tsx`成员
 
-笔者一直在使用前者，但是最近总结经验，发现后者更好些。主要是继承 Component 之后使用 mixins 想要有智能提示的话，需要将定义挂载在 Vue 上，不够友好。因此推荐使用：**通过继承 Vue 类并且声明\_tsx 成员**，下文都是争对该方案的说明。
+项目中一直在使用前者，但是最近总结经验，发现后者更好些。主要是继承 Component 之后使用 mixins 想要有智能提示的话，需要将定义挂载在 Vue 上，不够友好。因此推荐使用：**通过继承 Vue 类并且声明`_tsx`成员**，下文都是针对该方案的说明。
 
 ### 组件实例
 
-声明 tsx 组件,文件后缀必须为`.tsx`，这点和 react 不同，react 在 ts 文件中也是可以使用 jsx 的，但是 vue 不可以。如果一定要在`.ts`文件中，可以使用初始定义 jsx 的方式，具体可参照[vue 官网:](https://cn.vuejs.org/v2/guide/render-function.html#%E5%AE%8C%E6%95%B4%E7%A4%BA%E4%BE%8B)。
+声明 tsx 组件,文件后缀必须为`.tsx`，这点和 react 不同，react 在 ts 文件中也是可以使用 jsx 的，但是 vue 不可以。如果一定要在`.ts`文件中，可以使用定义 jsx 原始方式，具体可参照[vue 官网:](https://cn.vuejs.org/v2/guide/render-function.html#%E5%AE%8C%E6%95%B4%E7%A4%BA%E4%BE%8B)。
 
 在 tsx 文件中，声明组件的方式和 template 组件是一致的。
 
@@ -523,7 +523,9 @@ mixins 使用和 template 组件保持一致
 
 递归第三方组件的 dataProps，并将其类型推导出。eventProps 定义为索引类型，参数类型定义为 any。scopedSlotsProps 同样定义为索引类型，参数类型定义为 any。
 
-之后没此使用第三方组件，只要用 antdPropsConvert 方法包装下即可在使用时得到 props 的智能提示。
+之后每次使用第三方组件，只要用 antdPropsConvert 方法包装下即可在使用时得到 props 的智能提示。
+
+如果是单页应用，也可以创建一份组件清单文件，在该文件中转换所有的组件并导出，这样就省的一次次转换。
 
 ```
 //propsConvert.ts
@@ -586,9 +588,9 @@ export default class Sider extends Vue {
 
 ```
 
-### 事件修饰
+### 事件修饰符
 
-> [modifiers](https://github.com/wonderful-panda/vue-tsx-support#modifiers)
+如何在 tsx 组件中使用事件修饰符，推荐官方教程，[modifiers](https://github.com/wonderful-panda/vue-tsx-support#modifiers)
 
 ## 遗留问题
 
@@ -597,10 +599,173 @@ export default class Sider extends Vue {
 
 ## vue-router 的 ts 方案
 
-### 路由定义和引用
+`vue-router`官方已经支持 ts，在我们使用`vue-cli`创建了 ts 项目之后就可以使用。  
+但是如果我们需要在组件中定义路由钩子函数，需要先在全局进行注册
 
-### 路由钩子函数定义
+```
+// class-component-hooks.js
+import Component from 'vue-class-component';
+
+// Register the router hooks with their names
+Component.registerHooks(['beforeRouteEnter', 'beforeRouteLeave', 'beforeRouteUpdate']);
+```
+
+然后需要给 Vue 类型扩展定义
+
+```
+import Vue from 'vue';
+import { Route, NavigationGuardNext } from 'vue-router';
+declare module 'vue/types/vue' {
+  // Augment component instance type
+  interface Vue {
+    beforeRouteEnter?(to: Route, from: Route, next: NavigationGuardNext<Vue>): void;
+
+    beforeRouteLeave?(to: Route, from: Route, next: NavigationGuardNext<Vue>): void;
+
+    beforeRouteUpdate?(to: Route, from: Route, next: NavigationGuardNext<Vue>): void;
+  }
+}
+
+```
+
+使用前，在项目的入口文件引入注册文件即可。
+
+```
+import '@/utils/class-component-hooks';
+import Vue from 'vue';
+import 'vue-tsx-support/enable-check';
+import App from './App';
+import router from './router';
+import store from '@/modules';
+Vue.config.productionTip = false;
+new Vue({
+  router,
+  store,
+  render: (h) => h(App),
+}).$mount('#app');
+
+```
+
+然后在组件中定义路由钩子，即可获得准确的提示。
 
 ## vuex 的 ts 方案
 
+为了在 ts 环境中使用 vuex，vue 社区推出了[vuex-module-decorators](https://github.com/championswimmer/vuex-module-decorators),其工作方式和`vue-property-decorator`一致，都是通过装饰器来实现。
+
+### 模块创建
+
+`vuex-module-decorators`中常使用的成员：`VuexModule, Module, Mutation, Action, getModule`。
+
+创建步骤：
+
+1. 定义 Module 实例之前，我们需要先定义 state 的接口，这是为了之后`vuex-module-decorators`进行类型检测。
+2. 自定义 Module 类型，继承 VuexModule 类型，并实现 state 的接口
+3. 使用`@Module`装饰器装饰自定义 module，如果是动态 Module(意味着引入的时候自动注入到 vuex 中)，需要传参`dynamic, store, name`给 Module 函数
+4. 定义 action 和 mutation 我们都需要使用对应的装饰器`@Action、@Mutation`
+5. 导出自定义 Module，将自定义 Module 作为函数参数传递给 getModule 函数，该 module 中所有的 state，action，mutation 都绑定在导出对象上
+
+完整示例：
+
+```
+import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-decorators';
+import store from './index';
+
+type TodoItem = {
+  id: string;
+  content: string;
+  isDone: boolean;
+};
+type TodoListState = {
+  todos: TodoItem[];
+};
+const todos: TodoItem[] = [
+  {
+    id: '0',
+    content: 'todo-item1',
+    isDone: false,
+  },
+  {
+    id: '1',
+    content: 'todo-item2',
+    isDone: true,
+  },
+  {
+    id: '2',
+    content: 'todo-item3',
+    isDone: false,
+  },
+];
+@Module({ dynamic: true, store, name: 'todoListModule' })
+class TodoListModule extends VuexModule implements TodoListState {
+  todos: TodoItem[] = [];
+
+  //获取当前的todoList
+  @Action
+  async getAllTodoItems() {
+    const data = await new Promise<TodoItem[]>((resolve) => {
+      setTimeout(resolve, 1000, todos);
+    });
+    this._saveTodos(data);
+  }
+
+  @Mutation
+  private _saveTodos(data: TodoItem[]) {
+    this.todos = data;
+  }
+}
+export default getModule(TodoListModule);
+
+```
+
+### store 创建和使用
+
+创建 store 实例,由于项目是使用动态导入 module，因此很简洁。  
+如果需要在入口文件定义好全部 module，可以参照[官方教程](https://github.com/championswimmer/vuex-module-decorators#usage)。
+
+```
+import Vue from 'vue';
+import Vuex from 'vuex';
+
+Vue.use(Vuex);
+
+// Declare empty store first, dynamically register all modules later.
+const Store = new Vuex.Store<{}>({});
+export default Store;
+
+```
+
+vuex 使用和原生 vue 一致，都是引入 store 的入口文件，然后将其传入 Vue 实例中
+
+### 在组件中使用 vuex(动态导入 Module)
+
+使用步骤：
+
+1. 需要导入对应的 module 文件
+2. 导入 state，因为 state 成员通过计算属性使用，因此在 ts 中需要通过 get 函数导入
+3. 调用 action 或者 mutation 方法，直接调用对应的 Module 即可
+
+```
+import { Component, Vue } from 'vue-property-decorator';
+import TodoListModule from '@/modules/todoList';
+
+@Component
+export default class Index extends Vue {
+  get todos() {
+    return TodoListModule.todos;
+  }
+
+  created() {
+    TodoListModule.getAllTodoItems().then(() => {
+      console.log('todos', this.todos);
+    });
+  }
+}
+```
+
 ## api 类型定义的建议
+
+在项目中，定义 api 接口的类型是个麻烦事，尤其是接口很多的情况下。如果手动定义，成本会很大，也影响效率。当接口修改（这是常常发生的），我们将不得不进行同步的修正。
+
+因此我建议使用阿里团队出品的`pont`库，该库有效的解决了 api 接口定义的麻烦问题。
+
+详情请见官网：[pont](https://github.com/alibaba/pont)
